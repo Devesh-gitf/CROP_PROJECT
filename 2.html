@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AI Crop Recommendation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        :root {
+            --green-primary: #27ae60;
+            --green-light: #d4edd2;
+            --text-dark: #2c3e50;
+            --text-grey: #7f8c8d;
+            --bg-light: #f5fbf3;
+            --bg-white: #fff;
+            --border-grey: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--bg-light);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-grey);
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 30px;
+            height: 30px;
+            background-color: var(--green-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-white);
+            font-size: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .lang-switch {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .lang-switch span {
+            color: var(--green-primary);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-grey);
+            margin-bottom: 5px;
+        }
+
+        .input-group input,
+        .input-group select {
+            border: 1px solid var(--border-grey);
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            background-color: var(--bg-white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.2s;
+        }
+
+        .input-group input::placeholder,
+        .input-group select {
+            color: var(--text-grey);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--green-primary);
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .btn-primary {
+            background-color: var(--green-primary);
+            color: var(--bg-white);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #219150;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            border: 1px solid var(--border-grey);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .reset-icon {
+            font-size: 1.2rem;
+        }
+
+        .recommended-crops {
+            margin-top: 30px;
+        }
+
+        .crop-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .crop-card {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            flex: 1 1 150px;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .crop-card img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .crop-card h3 {
+            font-size: 1rem;
+            color: var(--text-dark);
+            margin: 0 0 5px;
+            font-weight: 600;
+        }
+
+        .crop-card p {
+            font-size: 0.8rem;
+            color: var(--text-grey);
+            margin: 0;
+        }
+
+        #cropResult ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #cropResult li {
+            background-color: var(--bg-white);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .buttons {
+                flex-direction: column;
+            }
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">🌱</div>
+                <h1>Smart AI Crop Recommendation</h1>
+            </div>
+            <div class="lang-switch">हिंदी / <span>EN</span></div>
+        </div>
+
+        <form id="cropForm">
+            <h2 class="section-title">Enter Your Details</h2>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="nitrogen">Nitrogen (kg/ha)</label>
+                    <input type="number" id="nitrogen" placeholder="e.g. 90" required>
+                </div>
+                <div class="input-group">
+                    <label for="moisture">Moisture (%)</label>
+                    <input type="number" id="moisture" placeholder="e.g. 40" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="phosphorus">Phosphorus (kg/ha)</label>
+                    <input type="number" id="phosphorus" placeholder="e.g. 40" required>
+                </div>
+                <div class="input-group">
+                    <label for="avg_temp">Temperature (°C)</label>
+                    <input type="number" id="avg_temp" placeholder="e.g. 25" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="potassium">Potassium (kg/ha)</label>
+                    <input type="number" id="potassium" placeholder="e.g. 50" required>
+                </div>
+                <div class="input-group">
+                    <label for="rainfall">Rainfall (mm)</label>
+                    <input type="number" id="rainfall" placeholder="e.g. 200" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="ph">Soil pH</label>
+                    <input type="number" id="ph" step="0.1" placeholder="e.g. 6.5" required>
+                </div>
+                <div class="input-group">
+                    <label for="previous_crop">Previous Crop</label>
+                    <select id="previous_crop" required>
+                        <option value="">Select Crop</option>
+                        <option value="wheat">Wheat</option>
+                        <option value="rice">Rice</option>
+                        <option value="maize">Maize</option>
+                        <option value="sugarcane">Sugarcane</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button type="submit" class="btn btn-primary">Get Recommendations</button>
+                <button type="reset" class="btn btn-secondary">
+                    <span class="reset-icon">↻</span> Reset
+                </button>
+            </div>
+        </form>
+
+        <div class="recommended-crops">
+            <h2 class="section-title">Recommended Crops</h2>
+            <div id="cropResult" class="crop-list">
+                <div class="crop-card">
+                    <img src="https://via.placeholder.com/150/d4edd2?text=Wheat" alt="Wheat">
+                    <h3>Wheat</h3>
+                    <p>Best suited for your soil & weather</p>
+                </div>
+                <div class="crop-card">
+                    <img src="https://via.placeholder.com/150/d4edd2?text=Rice" alt="Rice">
+                    <h3>Rice</h3>
+                    <p>High water availablity detected</p>
+                </div>
+                <div class="crop-card">
+                    <img src="https://via.placeholder.com/150/d4edd2?text=Sugarcane" alt="Sugarcane">
+                    <h3>Sugarcane</h3>
+                    <p>Good for your region</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const backendUrl = "http://127.0.0.1:8000";
+
+        document.getElementById('cropForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                nitrogen: parseFloat(document.getElementById('nitrogen').value),
+                phosphorus: parseFloat(document.getElementById('phosphorus').value),
+                potassium: parseFloat(document.getElementById('potassium').value),
+                ph: parseFloat(document.getElementById('ph').value),
+                moisture: parseFloat(document.getElementById('moisture').value),
+                avg_temp: parseFloat(document.getElementById('avg_temp').value),
+                rainfall: parseFloat(document.getElementById('rainfall').value),
+                previous_crop: document.getElementById('previous_crop').value,
+                // Assuming water availability is derived from moisture/rainfall, or you can add a field
+                water_available: document.getElementById('moisture').value > 60 ? 'high' : 'medium'
+            };
+            
+            try {
+                const response = await fetch(`${backendUrl}/recommend`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                let html = "";
+                if (result.recommendations && result.recommendations.length > 0) {
+                    result.recommendations.forEach(c => {
+                        html += `
+                            <div class="crop-card">
+                                <img src="https://via.placeholder.com/150/d4edd2?text=${c.crop}" alt="${c.crop}">
+                                <h3>${c.crop}</h3>
+                                <p>${c.message || 'Best suited for your region'}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = "<p>No recommendations found for the given parameters.</p>";
+                }
+
+                document.getElementById('cropResult').innerHTML = html;
+            } catch (err) {
+                document.getElementById('cropResult').innerHTML = "<p>Error fetching recommendations. Please try again.</p>";
+                console.error(err);
+            }
+        });
+
+        // The fertilizer form is not in the design but if you need it, you can add it back
+        // document.getElementById('fertilizerForm').addEventListener('submit', ...)
+    </script>
+</body>
+</html>

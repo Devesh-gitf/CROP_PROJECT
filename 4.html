@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart AI Crop Recommendation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('crop.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+  <!-- Header -->
+  <header class="w-full max-w-3xl bg-white shadow-lg rounded-2xl p-4 flex justify-between items-center bg-opacity-90">
+    <h1 id="title" class="text-2xl font-bold text-green-700 flex items-center">
+      <i class="fas fa-leaf mr-2"></i> Smart AI Crop Recommendation
+    </h1>
+    <div class="flex space-x-2">
+      <button id="lang-en" class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">EN</button>
+      <button id="lang-hi" class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">हिंदी</button>
+    </div>
+  </header>
+
+  <!-- Crop Recommendation Form -->
+  <main class="w-full max-w-3xl mt-6 bg-white rounded-2xl shadow-xl p-6 bg-opacity-90">
+    <h2 id="cropTitle" class="text-xl font-semibold text-green-700 mb-4">Crop Recommendation</h2>
+    <form id="cropForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label id="labelNitrogen" class="block mb-1 text-gray-700"><i class="fas fa-seedling"></i> Nitrogen (kg/ha)</label>
+        <input type="number" id="nitrogen" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label id="labelPhosphorus" class="block mb-1 text-gray-700"><i class="fas fa-flask"></i> Phosphorus (kg/ha)</label>
+        <input type="number" id="phosphorus" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label id="labelPotassium" class="block mb-1 text-gray-700"><i class="fas fa-vial"></i> Potassium (kg/ha)</label>
+        <input type="number" id="potassium" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label id="labelPH" class="block mb-1 text-gray-700"><i class="fas fa-tint"></i> Soil pH</label>
+        <input type="number" id="ph" step="0.1" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label id="labelMoisture" class="block mb-1 text-gray-700"><i class="fas fa-water"></i> Moisture (%)</label>
+        <input type="number" id="moisture" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label id="labelTemp" class="block mb-1 text-gray-700"><i class="fas fa-temperature-high"></i> Temperature (°C)</label>
+        <input type="number" id="avg_temp" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label id="labelRainfall" class="block mb-1 text-gray-700"><i class="fas fa-cloud-rain"></i> Rainfall (mm)</label>
+        <input type="number" id="rainfall" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label id="labelWater" class="block mb-1 text-gray-700"><i class="fas fa-faucet"></i> Water Availability</label>
+        <select id="water_available" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label id="labelPreviousCrop" class="block mb-1 text-gray-700"><i class="fas fa-seedling"></i> Previous Crop</label>
+        <input type="text" id="previous_crop" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div class="flex justify-between md:col-span-2 mt-4">
+        <button type="submit" id="cropBtn" class="bg-green-500 text-white px-4 py-2 rounded-lg text-lg hover:bg-green-600">
+          <i class="fas fa-check-circle"></i> Get Recommendations
+        </button>
+        <button type="reset" id="cropReset" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">
+          <i class="fas fa-redo"></i> Reset
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Crop Result Section -->
+  <section class="w-full max-w-3xl mt-6 bg-white rounded-2xl shadow-lg p-6 bg-opacity-90">
+    <h2 class="text-xl font-semibold text-green-700 mb-4">Recommended Crops</h2>
+    <div id="cropResult" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+  </section>
+
+  <!-- Fertilizer Suggestion Form -->
+  <main class="w-full max-w-3xl mt-6 bg-white rounded-2xl shadow-xl p-6 bg-opacity-90">
+    <h2 id="fertTitle" class="text-xl font-semibold text-green-700 mb-4">Fertilizer Suggestion</h2>
+    <form id="fertilizerForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label id="labelFNitrogen" class="block mb-1 text-gray-700"><i class="fas fa-seedling"></i> Nitrogen</label>
+        <input type="number" id="fert_nitrogen" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+      <div>
+        <label id="labelFPhosphorus" class="block mb-1 text-gray-700"><i class="fas fa-flask"></i> Phosphorus</label>
+        <input type="number" id="fert_phosphorus" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+      <div>
+        <label id="labelFPotassium" class="block mb-1 text-gray-700"><i class="fas fa-vial"></i> Potassium</label>
+        <input type="number" id="fert_potassium" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+      <div class="md:col-span-2">
+        <label id="labelTargetCrop" class="block mb-1 text-gray-700"><i class="fas fa-seedling"></i> Target Crop</label>
+        <input type="text" id="target_crop" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+      <div class="flex justify-between md:col-span-2 mt-4">
+        <button type="submit" id="fertBtn" class="bg-green-500 text-white px-4 py-2 rounded-lg text-lg hover:bg-green-600">
+          <i class="fas fa-check-circle"></i> Get Fertilizer Suggestions
+        </button>
+        <button type="reset" id="fertReset" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">
+          <i class="fas fa-redo"></i> Reset
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <section class="w-full max-w-3xl mt-6 bg-white rounded-2xl shadow-lg p-6 bg-opacity-90">
+    <h2 class="text-xl font-semibold text-green-700 mb-4">Fertilizer Suggestions</h2>
+    <div id="fertilizerResult"></div>
+  </section>
+
+  <!-- Script -->
+  <script>
+    const backendUrl = "http://127.0.0.1:8000";
+
+    const lang = {
+      en: {
+        title: "Smart AI Crop Recommendation",
+        cropTitle: "Crop Recommendation",
+        fertilizerTitle: "Fertilizer Suggestion",
+        labels: {
+          nitrogen: "Nitrogen",
+          phosphorus: "Phosphorus",
+          potassium: "Potassium",
+          ph: "Soil pH",
+          moisture: "Moisture",
+          avg_temp: "Temperature (°C)",
+          rainfall: "Rainfall",
+          water: "Water Availability",
+          previous_crop: "Previous Crop",
+          target_crop: "Target Crop"
+        },
+        buttons: {
+          getRecommendation: "Get Recommendations",
+          reset: "Reset",
+          getFertilizer: "Get Fertilizer Suggestions"
+        }
+      },
+      hi: {
+        title: "स्मार्ट एआई फसल सिफारिश",
+        cropTitle: "फसल सिफारिश",
+        fertilizerTitle: "उर्वरक सुझाव",
+        labels: {
+          nitrogen: "नाइट्रोजन",
+          phosphorus: "फॉस्फोरस",
+          potassium: "पोटाश",
+          ph: "पीएच",
+          moisture: "नमी",
+          avg_temp: "तापमान (°C)",
+          rainfall: "वर्षा",
+          water: "पानी की उपलब्धता",
+          previous_crop: "पिछली फसल",
+          target_crop: "लक्ष्य फसल"
+        },
+        buttons: {
+          getRecommendation: "सिफारिश प्राप्त करें",
+          reset: "रीसेट",
+          getFertilizer: "उर्वरक सुझाव प्राप्त करें"
+        }
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(langCode) {
+      currentLang = langCode;
+      const l = lang[langCode];
+      document.getElementById('title').innerText = l.title;
+      document.getElementById('cropTitle').innerText = l.cropTitle;
+      document.getElementById('fertTitle').innerText = l.fertilizerTitle;
+
+      document.getElementById('labelNitrogen').innerText = l.labels.nitrogen;
+      document.getElementById('labelPhosphorus').innerText = l.labels.phosphorus;
+      document.getElementById('labelPotassium').innerText = l.labels.potassium;
+      document.getElementById('labelPH').innerText = l.labels.ph;
+      document.getElementById('labelMoisture').innerText = l.labels.moisture;
+      document.getElementById('labelTemp').innerText = l.labels.avg_temp;
+      document.getElementById('labelRainfall').innerText = l.labels.rainfall;
+      document.getElementById('labelWater').innerText = l.labels.water;
+      document.getElementById('labelPreviousCrop').innerText = l.labels.previous_crop;
+      document.getElementById('labelFNitrogen').innerText = l.labels.nitrogen;
+      document.getElementById('labelFPhosphorus').innerText = l.labels.phosphorus;
+      document.getElementById('labelFPotassium').innerText = l.labels.potassium;
+      document.getElementById('labelTargetCrop').innerText = l.labels.target_crop;
+
+      document.getElementById('cropBtn').innerText = l.buttons.getRecommendation;
+      document.getElementById('cropReset').innerText = l.buttons.reset;
+      document.getElementById('fertBtn').innerText = l.buttons.getFertilizer;
+      document.getElementById('fertReset').innerText = l.buttons.reset;
+    }
+
+    document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+    document.getElementById('lang-hi').addEventListener('click', () => setLanguage('hi'));
+
+    setLanguage(currentLang);
+
+    // Crop Recommendation
+    document.getElementById('cropForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        nitrogen: parseFloat(document.getElementById('nitrogen').value),
+        phosphorus: parseFloat(document.getElementById('phosphorus').value),
+        potassium: parseFloat(document.getElementById('potassium').value),
+        ph: parseFloat(document.getElementById('ph').value),
+        moisture: parseFloat(document.getElementById('moisture').value),
+        avg_temp: parseFloat(document.getElementById('avg_temp').value),
+        rainfall: parseFloat(document.getElementById('rainfall').value),
+        water_available: document.getElementById('water_available').value,
+        previous_crop: document.getElementById('previous_crop').value
+      };
+      try {
+        const response = await fetch(`${backendUrl}/recommend`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        let html = "";
+        if (result.recommendations && result.recommendations.length > 0) {
+          result.recommendations.forEach(c => {
+            html += `
+              <div class="border rounded-xl shadow p-4 text-center hover:shadow-xl">
+                <img src="https://via.placeholder.com/150/d4edd2?text=${c.crop}" class="mx-auto mb-2 rounded-lg">
+                <h3 class="font-bold text-green-700">${c.crop}</h3>
+                <p class="text-sm text-gray-600">Suitability: ${c.score}%</p>
+              </div>
+            `;
+          });
+        } else {
+          html = "<p>No recommendations found.</p>";
+        }
+        document.getElementById('cropResult').innerHTML = html;
+      } catch (err) {
+        document.getElementById('cropResult').innerHTML = "<p>Error fetching recommendations.</p>";
+        console.error(err);
+      }
+    });
+
+    // Fertilizer Suggestion
+    document.getElementById('fertilizerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        nitrogen: parseFloat(document.getElementById('fert_nitrogen').value),
+        phosphorus: parseFloat(document.getElementById('fert_phosphorus').value),
+        potassium: parseFloat(document.getElementById('fert_potassium').value),
+        target_crop: document.getElementById('target_crop').value
+      };
+      try {
+        const response = await fetch(`${backendUrl}/fertilizer`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        let html = "<ul class='list-disc pl-5'>";
+        for (const [key, val] of Object.entries(result.suggestions)) {
+          html += `<li>${key}: ${val}</li>`;
+        }
+        html += "</ul>";
+        document.getElementById('fertilizerResult').innerHTML = html;
+      } catch (err) {
+        document.getElementById('fertilizerResult').innerHTML = "<p>Error fetching fertilizer suggestions.</p>";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

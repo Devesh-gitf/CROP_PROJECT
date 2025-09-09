@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Crop Recommendation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 0; }
+    header { background: #27ae60; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; }
+    nav a { color: white; margin-left: 20px; text-decoration: none; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+    .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
+    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    body.dark { background: #1e1e1e; color: #eee; }
+    body.dark header { background: #111; }
+    body.dark .card { background: #2c2c2c; color: #eee; }
+    .toggle-btn { position: fixed; bottom: 20px; right: 20px; background: #444; color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer; z-index: 1000; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Crop Recommendation</h1>
+    <nav>
+      <a href="#" onclick="showPage('about')">About</a>
+      <a href="#" onclick="showPage('contact')">Contact</a>
+      <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+      <a href="#" onclick="showPage('profile')">Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <button class="toggle-btn" onclick="toggleTheme()">🌙</button>
+
+  <div class="container">
+    <!-- Login Page -->
+    <div id="loginPage" class="card max-w-md mx-auto">
+      <h2 class="text-2xl font-bold text-green-600 mb-4">Login / Signup</h2>
+      <form id="loginForm" class="grid grid-cols-1 gap-4">
+        <div><label>Full Name</label><input type="text" id="fullName" class="w-full p-2 border rounded-lg" required></div>
+        <div><label>Email</label><input type="email" id="email" class="w-full p-2 border rounded-lg" required></div>
+        <div><label>Phone</label><input type="text" id="phone" class="w-full p-2 border rounded-lg" required></div>
+        <div><label>Location</label><input type="text" id="location" class="w-full p-2 border rounded-lg" required></div>
+        <div><label>Password</label><input type="password" id="password" class="w-full p-2 border rounded-lg" required></div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Submit</button>
+      </form>
+    </div>
+
+    <!-- About Page -->
+    <div id="aboutPage" class="card" style="display:none;">
+      <h2>About Us</h2>
+      <p>Welcome to the AI Crop Recommendation System! 🌱 This platform helps farmers choose the best crops and fertilizers based on soil nutrients, pH, moisture, and climate data. Built for the Smart India Hackathon, it aims to improve yield, reduce costs, and ensure sustainable farming.</p>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contactPage" class="card" style="display:none;">
+      <h2>Contact Us</h2>
+      <form class="grid grid-cols-1 gap-4">
+        <div><label>Your Name</label><input type="text" required class="w-full p-2 border rounded-lg"></div>
+        <div><label>Email</label><input type="email" required class="w-full p-2 border rounded-lg"></div>
+        <div><label>Message</label><textarea rows="4" required class="w-full p-2 border rounded-lg"></textarea></div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg">Send</button>
+      </form>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profilePage" class="card" style="display:none;">
+      <h2 class="text-2xl font-semibold">👤 Profile</h2>
+      <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+      <form id="profileForm" class="grid grid-cols-1 gap-4">
+        <div><label>Name</label><input type="text" id="profileName" class="w-full p-2 border rounded-lg"></div>
+        <div><label>Phone</label><input type="text" id="profilePhone" class="w-full p-2 border rounded-lg"></div>
+        <div><label>Location</label><input type="text" id="profileLocation" class="w-full p-2 border rounded-lg"></div>
