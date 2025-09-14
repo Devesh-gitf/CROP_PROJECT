@@ -9,15 +9,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
 import uvicorn
-import os
 
 # ---------------------------
-# FastAPI app
+# Create FastAPI app
 # ---------------------------
 app = FastAPI(title="AI Crop Recommendation API", version="1.0")
 
 # ---------------------------
-# CORS
+# Enable CORS
 # ---------------------------
 app.add_middleware(
     CORSMiddleware,
@@ -28,13 +27,13 @@ app.add_middleware(
 )
 
 # ---------------------------
-# Serve frontend
+# Serve Frontend (index.html)
 # ---------------------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def serve_frontend():
-    return FileResponse("index.html")
+    return FileResponse("static/index.html")
 
 # ---------------------------
 # Input Models
@@ -65,18 +64,22 @@ class FertilizerOutput(BaseModel):
     suggestions: Dict[str, str]
 
 # ---------------------------
-# Load & train model
+# Load and Train Model
 # ---------------------------
 df = pd.read_csv("crop_data.csv")
 
+# Encode crop labels
 le = LabelEncoder()
 df["crop"] = le.fit_transform(df["crop"])
 
+# Features & target
 X = df.drop("crop", axis=1)
 y = df["crop"]
 
+# Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+# Train model
 model = DecisionTreeClassifier(random_state=42)
 model.fit(X_train, y_train)
 
@@ -85,6 +88,7 @@ model.fit(X_train, y_train)
 # ---------------------------
 @app.post("/recommend", response_model=RecommendOutput)
 def recommend(data: RecommendInput):
+    """ Recommend crops using ML model """
     input_data = pd.DataFrame([{
         "N": data.nitrogen,
         "P": data.phosphorus,
@@ -94,17 +98,23 @@ def recommend(data: RecommendInput):
         "temperature": data.temperature,
         "rainfall": data.rainfall
     }])
+
+    # Predict probabilities
     probs = model.predict_proba(input_data)[0]
     crop_labels = le.inverse_transform(model.classes_)
+
+    # Pick top 3 crops
     top_indices = probs.argsort()[-3:][::-1]
     recommendations = [
         CropRecommendation(crop=crop_labels[i], score=round(probs[i] * 100, 2))
         for i in top_indices
     ]
+
     return RecommendOutput(recommendations=recommendations)
 
 @app.post("/fertilizer", response_model=FertilizerOutput)
 def fertilizer(data: FertilizerInput):
+    """ Suggest fertilizers based on soil nutrient levels """
     suggestions = {}
     suggestions["Nitrogen"] = (
         "Add Urea or Ammonium Sulfate" if data.nitrogen < 50 else "Nitrogen level is sufficient"
@@ -119,13 +129,12 @@ def fertilizer(data: FertilizerInput):
     return FertilizerOutput(suggestions=suggestions)
 
 # ---------------------------
-# Run locally
+# Run backend directly with Python
 # ---------------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
     uvicorn.run(
         "ai_crop_recommender_backend:app",
-        host="0.0.0.0",
-        port=port,
+        host="127.0.0.1",
+        port=8000,
         reload=True
     )
