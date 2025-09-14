@@ -9,11 +9,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
 import uvicorn
+import os
 
 # ---------------------------
 # Create FastAPI app
 # ---------------------------
-app = FastAPI(title="AI Crop Recommendation API", version="1.0")
+app = FastAPI(title="CropIQ - AI Crop Recommendation API", version="1.0")
 
 # ---------------------------
 # Enable CORS
@@ -66,7 +67,10 @@ class FertilizerOutput(BaseModel):
 # ---------------------------
 # Load and Train Model
 # ---------------------------
-df = pd.read_csv("crop_data.csv")
+try:
+    df = pd.read_csv("crop_data.csv")
+except FileNotFoundError:
+    raise RuntimeError("❌ crop_data.csv not found. Place it in the project root before running.")
 
 # Encode crop labels
 le = LabelEncoder()
@@ -129,12 +133,13 @@ def fertilizer(data: FertilizerInput):
     return FertilizerOutput(suggestions=suggestions)
 
 # ---------------------------
-# Run backend directly with Python
+# Run backend (local / Railway / Heroku)
 # ---------------------------
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))  # Railway/Heroku provide PORT
     uvicorn.run(
         "ai_crop_recommender_backend:app",
-        host="127.0.0.1",
-        port=8000,
+        host="0.0.0.0",
+        port=port,
         reload=True
     )
